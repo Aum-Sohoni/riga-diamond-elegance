@@ -6,21 +6,24 @@ import { BespokeSection } from "@/components/sections/BespokeSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { Footer } from "@/components/layout/Footer";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <main>
-        <HeroSection />
-        <CollectionsSection />
-        <AboutSection />
-        <BespokeSection />
-        <TestimonialsSection />
-        <ContactSection />
-      </main>
-      <Footer />
-    </div>
+    <LanguageProvider>
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main>
+          <HeroSection />
+          <CollectionsSection />
+          <AboutSection />
+          <BespokeSection />
+          <TestimonialsSection />
+          <ContactSection />
+        </main>
+        <Footer />
+      </div>
+    </LanguageProvider>
   );
 };
 

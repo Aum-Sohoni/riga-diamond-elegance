@@ -1,36 +1,10 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import necklaceImage from "@/assets/collection-necklace.jpg";
 import ringImage from "@/assets/collection-ring.jpg";
 import earringsImage from "@/assets/collection-earrings.jpg";
 import braceletImage from "@/assets/collection-bracelet.jpg";
-
-const collections = [
-  {
-    name: "Necklaces",
-    description: "Elegant pendants & statement pieces",
-    image: necklaceImage,
-    items: "48 pieces",
-  },
-  {
-    name: "Rings",
-    description: "Engagement & eternity bands",
-    image: ringImage,
-    items: "72 pieces",
-  },
-  {
-    name: "Earrings",
-    description: "Studs, drops & chandeliers",
-    image: earringsImage,
-    items: "56 pieces",
-  },
-  {
-    name: "Bracelets",
-    description: "Tennis & bangle collections",
-    image: braceletImage,
-    items: "34 pieces",
-  },
-];
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -55,26 +29,54 @@ const itemVariants = {
 };
 
 export const CollectionsSection = () => {
+  const { t } = useLanguage();
+
+  const collections = [
+    {
+      nameKey: "necklaces",
+      descKey: "necklacesDesc",
+      image: necklaceImage,
+      items: 48,
+    },
+    {
+      nameKey: "rings",
+      descKey: "ringsDesc",
+      image: ringImage,
+      items: 72,
+    },
+    {
+      nameKey: "earrings",
+      descKey: "earringsDesc",
+      image: earringsImage,
+      items: 56,
+    },
+    {
+      nameKey: "bracelets",
+      descKey: "braceletsDesc",
+      image: braceletImage,
+      items: 34,
+    },
+  ];
+
   return (
-    <section id="collections" className="py-24 lg:py-32 bg-background">
-      <div className="container mx-auto px-6 lg:px-12">
+    <section id="collections" className="py-16 sm:py-24 lg:py-32 bg-background">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-12">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16 lg:mb-20"
+          className="text-center mb-10 sm:mb-16 lg:mb-20"
         >
-          <span className="text-primary text-sm tracking-[0.4em] uppercase font-body block mb-4">
-            Our Collections
+          <span className="text-primary text-xs sm:text-sm tracking-[0.3em] sm:tracking-[0.4em] uppercase font-body block mb-3 sm:mb-4">
+            {t("ourCollections")}
           </span>
-          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-foreground mb-6">
-            Curated Excellence
+          <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-foreground mb-4 sm:mb-6">
+            {t("curatedExcellence")}
           </h2>
-          <p className="font-body text-muted-foreground text-lg max-w-2xl mx-auto">
-            Each piece in our collection represents the pinnacle of diamond 
-            craftsmanship, sourced ethically and cut to perfection.
+          <p className="font-body text-muted-foreground text-sm sm:text-base lg:text-lg max-w-2xl mx-auto px-2">
+            {t("collectionsDescription")}
           </p>
         </motion.div>
 
@@ -84,11 +86,11 @@ export const CollectionsSection = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 xl:gap-8"
         >
           {collections.map((collection) => (
             <motion.a
-              key={collection.name}
+              key={collection.nameKey}
               href="#"
               variants={itemVariants}
               className="group relative overflow-hidden bg-card aspect-[3/4] cursor-pointer"
@@ -97,7 +99,7 @@ export const CollectionsSection = () => {
               <div className="absolute inset-0 image-shimmer">
                 <img
                   src={collection.image}
-                  alt={collection.name}
+                  alt={t(collection.nameKey)}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 {/* Overlay */}
@@ -105,23 +107,23 @@ export const CollectionsSection = () => {
               </div>
 
               {/* Content */}
-              <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                <span className="text-primary/80 text-xs tracking-[0.2em] uppercase mb-2 font-body">
-                  {collection.items}
+              <div className="absolute inset-0 p-3 sm:p-4 lg:p-6 flex flex-col justify-end">
+                <span className="text-primary/80 text-[10px] sm:text-xs tracking-[0.15em] sm:tracking-[0.2em] uppercase mb-1 sm:mb-2 font-body">
+                  {collection.items} {t("pieces")}
                 </span>
-                <h3 className="font-display text-2xl text-foreground mb-1 group-hover:text-primary transition-colors duration-300">
-                  {collection.name}
+                <h3 className="font-display text-lg sm:text-xl lg:text-2xl text-foreground mb-0.5 sm:mb-1 group-hover:text-primary transition-colors duration-300">
+                  {t(collection.nameKey)}
                 </h3>
-                <p className="text-muted-foreground text-sm font-body mb-4">
-                  {collection.description}
+                <p className="text-muted-foreground text-xs sm:text-sm font-body mb-2 sm:mb-4 line-clamp-2">
+                  {t(collection.descKey)}
                 </p>
 
                 {/* Explore link */}
-                <div className="flex items-center gap-2 text-primary opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
-                  <span className="text-sm tracking-[0.15em] uppercase font-body">
-                    Explore
+                <div className="flex items-center gap-1 sm:gap-2 text-primary opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
+                  <span className="text-xs sm:text-sm tracking-[0.1em] sm:tracking-[0.15em] uppercase font-body">
+                    {t("explore")}
                   </span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
                 </div>
               </div>
 

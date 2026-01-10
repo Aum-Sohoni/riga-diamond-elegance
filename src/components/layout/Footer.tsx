@@ -1,64 +1,70 @@
-import { Diamond } from "lucide-react";
-
-const footerLinks = {
-  collections: [
-    { name: "Necklaces", href: "#" },
-    { name: "Rings", href: "#" },
-    { name: "Earrings", href: "#" },
-    { name: "Bracelets", href: "#" },
-  ],
-  services: [
-    { name: "Bespoke Design", href: "#" },
-    { name: "Diamond Education", href: "#" },
-    { name: "Ring Sizing", href: "#" },
-    { name: "Aftercare", href: "#" },
-  ],
-  company: [
-    { name: "Our Story", href: "#" },
-    { name: "Sustainability", href: "#" },
-    { name: "Careers", href: "#" },
-    { name: "Press", href: "#" },
-  ],
-};
+import { useLanguage } from "@/contexts/LanguageContext";
+import logo from "@/assets/logo.png";
 
 export const Footer = () => {
+  const { t } = useLanguage();
+
+  const footerLinks = {
+    collections: [
+      { nameKey: "necklaces", href: "#" },
+      { nameKey: "rings", href: "#" },
+      { nameKey: "earrings", href: "#" },
+      { nameKey: "bracelets", href: "#" },
+    ],
+    services: [
+      { nameKey: "bespokeDesign", href: "#" },
+      { nameKey: "diamondEducation", href: "#" },
+      { nameKey: "ringSizing", href: "#" },
+      { nameKey: "aftercare", href: "#" },
+    ],
+    company: [
+      { nameKey: "ourStory", href: "#" },
+      { nameKey: "sustainability", href: "#" },
+      { nameKey: "careers", href: "#" },
+      { nameKey: "press", href: "#" },
+    ],
+  };
+
   return (
     <footer className="bg-card border-t border-border">
-      <div className="container mx-auto px-6 lg:px-12 py-16 lg:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-12 py-10 sm:py-16 lg:py-20">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 sm:gap-10 lg:gap-8">
           {/* Brand Column */}
-          <div className="lg:col-span-2">
-            <a href="#" className="flex items-center gap-3 mb-6">
-              <Diamond className="w-8 h-8 text-primary" />
+          <div className="col-span-2 md:col-span-3 lg:col-span-2">
+            <a href="#" className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+              <img 
+                src={logo} 
+                alt="Surat Diamond Logo" 
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+              />
               <div className="flex flex-col">
-                <span className="font-display text-xl tracking-wider text-foreground">
-                  SURAT DIAMOND
+                <span className="font-display text-base sm:text-xl tracking-wider text-foreground">
+                  Surat diamond
                 </span>
-                <span className="text-[10px] tracking-[0.3em] text-muted-foreground uppercase">
-                  Latvia
+                <span className="text-[8px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.3em] text-muted-foreground uppercase">
+                  Premium Jewellery
                 </span>
               </div>
             </a>
-            <p className="text-muted-foreground font-body leading-relaxed max-w-sm mb-6">
-              Where Surat's legendary diamond heritage meets Baltic elegance. 
-              Crafting moments of eternal brilliance in the heart of Riga.
+            <p className="text-muted-foreground font-body leading-relaxed max-w-sm mb-4 sm:mb-6 text-xs sm:text-sm">
+              {t("footerDescription")}
             </p>
-            <p className="text-xs tracking-wider text-muted-foreground uppercase font-body">
+            <p className="text-[10px] sm:text-xs tracking-wider text-muted-foreground uppercase font-body">
               Elizabetes iela 22, Riga LV-1050
             </p>
           </div>
 
           {/* Links Columns */}
           <div>
-            <h4 className="font-display text-foreground mb-6">Collections</h4>
-            <ul className="space-y-3">
+            <h4 className="font-display text-foreground mb-4 sm:mb-6 text-sm sm:text-base">{t("collections")}</h4>
+            <ul className="space-y-2 sm:space-y-3">
               {footerLinks.collections.map((link) => (
-                <li key={link.name}>
+                <li key={link.nameKey}>
                   <a
                     href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm font-body"
+                    className="text-muted-foreground hover:text-primary transition-colors duration-300 text-xs sm:text-sm font-body"
                   >
-                    {link.name}
+                    {t(link.nameKey)}
                   </a>
                 </li>
               ))}
@@ -66,15 +72,15 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h4 className="font-display text-foreground mb-6">Services</h4>
-            <ul className="space-y-3">
+            <h4 className="font-display text-foreground mb-4 sm:mb-6 text-sm sm:text-base">{t("services")}</h4>
+            <ul className="space-y-2 sm:space-y-3">
               {footerLinks.services.map((link) => (
-                <li key={link.name}>
+                <li key={link.nameKey}>
                   <a
                     href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm font-body"
+                    className="text-muted-foreground hover:text-primary transition-colors duration-300 text-xs sm:text-sm font-body"
                   >
-                    {link.name}
+                    {t(link.nameKey)}
                   </a>
                 </li>
               ))}
@@ -82,15 +88,15 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h4 className="font-display text-foreground mb-6">Company</h4>
-            <ul className="space-y-3">
+            <h4 className="font-display text-foreground mb-4 sm:mb-6 text-sm sm:text-base">{t("company")}</h4>
+            <ul className="space-y-2 sm:space-y-3">
               {footerLinks.company.map((link) => (
-                <li key={link.name}>
+                <li key={link.nameKey}>
                   <a
                     href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm font-body"
+                    className="text-muted-foreground hover:text-primary transition-colors duration-300 text-xs sm:text-sm font-body"
                   >
-                    {link.name}
+                    {t(link.nameKey)}
                   </a>
                 </li>
               ))}
@@ -99,16 +105,16 @@ export const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-border mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-muted-foreground text-xs font-body">
-            © {new Date().getFullYear()} Surat Diamond Latvia. All rights reserved.
+        <div className="border-t border-border mt-10 sm:mt-16 pt-6 sm:pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-muted-foreground text-[10px] sm:text-xs font-body text-center sm:text-left">
+            © {new Date().getFullYear()} Surat Diamond Latvia. {t("allRightsReserved")}
           </p>
-          <div className="flex gap-6 text-xs font-body">
+          <div className="flex gap-4 sm:gap-6 text-[10px] sm:text-xs font-body">
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-              Privacy Policy
+              {t("privacyPolicy")}
             </a>
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-              Terms of Service
+              {t("termsOfService")}
             </a>
           </div>
         </div>
