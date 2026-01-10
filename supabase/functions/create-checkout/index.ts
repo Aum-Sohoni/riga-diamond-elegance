@@ -9,12 +9,8 @@ const corsHeaders = {
 
 interface CheckoutRequest {
   items: {
-    name: string;
-    nameLv?: string;
-    nameRu?: string;
-    price: number;
+    productId: string;
     quantity: number;
-    image?: string;
   }[];
   language?: string;
 }
@@ -30,8 +26,14 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Create Supabase client
+  // Create Supabase client with service role for database access
   const supabaseClient = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+  );
+
+  // Create Supabase client with anon key for user authentication
+  const supabaseAuth = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_ANON_KEY") ?? ""
   );
@@ -48,7 +50,7 @@ serve(async (req) => {
     if (!authHeader) throw new Error("No authorization header provided");
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
+    const { data: userData, error: userError } = await supabaseAuth.auth.getUser(token);
     
     if (userError) throw new Error(`Authentication error: ${userError.message}`);
     const user = userData.user;
@@ -62,6 +64,45 @@ serve(async (req) => {
       throw new Error("No items provided for checkout");
     }
 
+    // Validate all items have required fields
+    for (const item of items) {
+      if (!item.productId || typeof item.productId !== 'string') {
+        throw new Error("Invalid product ID provided");
+      }
+      if (!item.quantity || typeof item.quantity !== 'number' || item.quantity < 1 || !Number.isInteger(item.quantity)) {
+        throw new Error("Invalid quantity provided");
+      }
+    }
+
+    // Fetch product details from database to get authoritative prices
+    const productIds = items.map(item => item.productId);
+    const { data: dbProducts, error: productsError } = await supabaseClient
+      .from('products')
+      .select('id, name, name_lv, name_ru, price, is_active')
+      .in('id', productIds);
+
+    if (productsError) {
+      logStep("Database error fetching products", { error: productsError.message });
+      throw new Error("Failed to fetch product details");
+    }
+
+    if (!dbProducts || dbProducts.length === 0) {
+      throw new Error("No valid products found");
+    }
+
+    // Verify all requested products exist and are active
+    for (const item of items) {
+      const dbProduct = dbProducts.find(p => p.id === item.productId);
+      if (!dbProduct) {
+        throw new Error(`Product not found: ${item.productId}`);
+      }
+      if (!dbProduct.is_active) {
+        throw new Error(`Product is no longer available: ${dbProduct.name}`);
+      }
+    }
+
+    logStep("Products validated from database", { count: dbProducts.length });
+
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
 
     // Check if customer already exists
@@ -73,14 +114,19 @@ serve(async (req) => {
       logStep("Found existing customer", { customerId });
     }
 
-    // Create line items for Stripe checkout
+    // Create line items for Stripe checkout using DATABASE prices (not client-supplied)
     const lineItems = items.map((item) => {
+      const dbProduct = dbProducts.find(p => p.id === item.productId);
+      if (!dbProduct) {
+        throw new Error(`Product not found: ${item.productId}`);
+      }
+
       // Use localized name based on language
-      let productName = item.name;
-      if (language === "lv" && item.nameLv) {
-        productName = item.nameLv;
-      } else if (language === "ru" && item.nameRu) {
-        productName = item.nameRu;
+      let productName = dbProduct.name;
+      if (language === "lv" && dbProduct.name_lv) {
+        productName = dbProduct.name_lv;
+      } else if (language === "ru" && dbProduct.name_ru) {
+        productName = dbProduct.name_ru;
       }
 
       return {
@@ -89,13 +135,14 @@ serve(async (req) => {
           product_data: {
             name: productName,
           },
-          unit_amount: Math.round(item.price * 100), // Convert to cents
+          // Use price from DATABASE, not from client
+          unit_amount: Math.round(dbProduct.price * 100),
         },
         quantity: item.quantity,
       };
     });
 
-    logStep("Created line items", { count: lineItems.length });
+    logStep("Created line items from database prices", { count: lineItems.length });
 
     const origin = req.headers.get("origin") || "http://localhost:5173";
 
