@@ -1,117 +1,81 @@
 import { motion } from "framer-motion";
-import { ChevronDown, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import heroImage from "@/assets/hero-diamonds.jpg";
+import { ArrowRight } from "lucide-react";
+import collectionBracelet from "@/assets/collection-bracelet.jpg";
+import collectionRing from "@/assets/collection-ring.jpg";
+import collectionEarrings from "@/assets/collection-earrings.jpg";
+import collectionNecklace from "@/assets/collection-necklace.jpg";
+
+const productImages = [
+  { src: collectionBracelet, alt: "Diamond bracelets" },
+  { src: collectionRing, alt: "Diamond rings" },
+  { src: collectionEarrings, alt: "Diamond earrings" },
+  { src: collectionNecklace, alt: "Diamond necklaces" },
+];
 
 export const HeroSection = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        <img
-          src={heroImage}
-          alt="Luxury diamond jewelry"
-          className="w-full h-full object-cover object-center"
-        />
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/50 to-background" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-background/60" />
-      </div>
-
-      {/* Animated sparkles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute"
-            style={{
-              left: `${15 + i * 15}%`,
-              top: `${20 + (i % 3) * 25}%`,
-            }}
-            animate={{
-              opacity: [0.2, 0.8, 0.2],
-              scale: [0.8, 1.2, 0.8],
-            }}
-            transition={{
-              duration: 3,
-              delay: i * 0.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          >
-            <Sparkles className="w-4 h-4 text-primary/40" />
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.3 }}
-          className="mb-6"
-        >
-          <span className="text-primary text-sm tracking-[0.4em] uppercase font-body">
-            Established in Riga
-          </span>
-        </motion.div>
-
+    <section className="relative min-h-screen bg-background pt-24 pb-16 overflow-hidden">
+      {/* Large Typography */}
+      <div className="container mx-auto px-6">
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="font-display text-4xl md:text-6xl lg:text-7xl xl:text-8xl text-foreground mb-6 leading-tight"
+          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="font-display text-[clamp(3rem,12vw,10rem)] text-foreground text-center leading-none tracking-tight mb-8"
         >
-          Timeless Sparkle
-          <br />
-          <span className="text-gradient-gold">in the Heart of Riga</span>
-          <span className="inline-block ml-4 animate-float">💎</span>
+          <span className="text-muted-foreground/60">(</span>
+          <span className="tracking-[0.1em]">DIAMONDS</span>
+          <span className="text-muted-foreground/60">)</span>
         </motion.h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
+        {/* Product Images Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.7 }}
-          className="font-body text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 -mt-8 md:-mt-16"
         >
-          Where Surat's legendary diamond heritage meets Latvian elegance.
-          Discover extraordinary pieces crafted for those who appreciate 
-          the art of eternal beauty.
-        </motion.p>
+          {productImages.map((image, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
+              className="group relative aspect-square bg-secondary/30 overflow-hidden"
+            >
+              <img
+                src={image.src}
+                alt={image.alt}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors duration-300" />
+            </motion.div>
+          ))}
+        </motion.div>
 
+        {/* Bottom Text Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.9 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="text-center mt-16 md:mt-24 max-w-xl mx-auto"
         >
-          <Button variant="luxury" size="xl" className="min-w-[220px] sparkle">
-            Explore Collection
-          </Button>
-          <Button variant="luxuryOutline" size="xl" className="min-w-[220px]">
-            Our Story
-          </Button>
+          <h2 className="font-display text-2xl md:text-3xl italic text-foreground mb-4">
+            Discover our latest jewelry
+          </h2>
+          <p className="font-body text-muted-foreground text-sm md:text-base leading-relaxed mb-8">
+            creations crafted with love and attention to detail. Our features exquisite pieces adorned with sparkling diamonds, adding luxury and elegance to your ensemble.
+          </p>
+          <motion.a
+            href="#collections"
+            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-body text-sm tracking-wide group"
+            whileHover={{ x: 5 }}
+          >
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            <span>Go To Catalog</span>
+          </motion.a>
         </motion.div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2"
-      >
-        <motion.a
-          href="#collections"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="flex flex-col items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
-        >
-          <span className="text-xs tracking-[0.2em] uppercase">Discover</span>
-          <ChevronDown className="w-5 h-5" />
-        </motion.a>
-      </motion.div>
     </section>
   );
 };
