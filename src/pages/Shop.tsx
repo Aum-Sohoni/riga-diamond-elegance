@@ -3,11 +3,12 @@ import { motion } from "framer-motion";
 import { Link, useSearchParams } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
+import { useProducts, Product } from "@/hooks/useProducts";
+import { useWishlist } from "@/hooks/useWishlist";
 import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { products, Product } from "@/data/products";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Heart, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import collectionNecklace from "@/assets/collection-necklace.jpg";
 import collectionRing from "@/assets/collection-ring.jpg";
@@ -28,6 +29,9 @@ const Shop = () => {
   const categoryFromUrl = searchParams.get("category") || "all";
   const [selectedCategory, setSelectedCategory] = useState<string>(categoryFromUrl);
 
+  const { products, isLoading } = useProducts(selectedCategory);
+  const { isInWishlist, toggleWishlist } = useWishlist();
+
   const categories = ["all", "necklaces", "rings", "earrings", "bracelets"];
 
   // Sync URL with selected category
@@ -47,17 +51,12 @@ const Shop = () => {
     }
   };
 
-  const filteredProducts =
-    selectedCategory === "all"
-      ? products
-      : products.filter((p) => p.category === selectedCategory);
-
   const getProductName = (product: Product) => {
     switch (language) {
       case "lv":
-        return product.nameLv;
+        return product.name_lv || product.name;
       case "ru":
-        return product.nameRu;
+        return product.name_ru || product.name;
       default:
         return product.name;
     }
@@ -71,7 +70,31 @@ const Shop = () => {
   };
 
   const handleAddToCart = (product: Product) => {
-    addToCart(product);
+    // Convert database product to cart format
+    const cartProduct = {
+      id: product.id,
+      name: product.name,
+      nameLv: product.name_lv || product.name,
+      nameRu: product.name_ru || product.name,
+      price: Number(product.price),
+      category: product.category as "necklaces" | "rings" | "earrings" | "bracelets",
+      image: product.image_url || categoryImages[product.category],
+      images: [product.image_url || categoryImages[product.category]],
+      description: product.description || "",
+      descriptionLv: product.description_lv || product.description || "",
+      descriptionRu: product.description_ru || product.description || "",
+      specifications: {
+        carat: product.carat || "",
+        clarity: product.clarity || "",
+        cut: product.cut || "",
+        color: product.color || "",
+        metal: product.metal || "",
+        weight: "",
+      },
+      inStock: true,
+      featured: false,
+    };
+    addToCart(cartProduct);
     toast.success(t("addedToCart") || "Added to cart!");
   };
 
@@ -116,70 +139,100 @@ const Shop = () => {
             ))}
           </motion.div>
 
-          {/* Products Grid */}
-          <motion.div
-            layout
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-          >
-            {filteredProducts.map((product, index) => (
-              <motion.div
-                key={product.id}
-                layout
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="group"
-              >
-                <div className="bg-card border border-border rounded-sm overflow-hidden">
-                  <Link to={`/product/${product.id}`}>
-                    <div className="relative aspect-square overflow-hidden">
-                      <img
-                        src={categoryImages[product.category]}
-                        alt={getProductName(product)}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors duration-300" />
-                    </div>
-                  </Link>
+          {/* Loading state */}
+          {isLoading && (
+            <div className="flex justify-center py-20">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          )}
 
-                  <div className="p-4 sm:p-6">
+          {/* Products Grid */}
+          {!isLoading && (
+            <motion.div
+              layout
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            >
+              {products.map((product, index) => (
+                <motion.div
+                  key={product.id}
+                  layout
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="group"
+                >
+                  <div className="bg-card border border-border rounded-sm overflow-hidden">
                     <Link to={`/product/${product.id}`}>
-                      <h3 className="font-display text-lg text-foreground mb-2 group-hover:text-primary transition-colors">
-                        {getProductName(product)}
-                      </h3>
+                      <div className="relative aspect-square overflow-hidden">
+                        <img
+                          src={product.image_url || categoryImages[product.category]}
+                          alt={getProductName(product)}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors duration-300" />
+                        
+                        {/* Wishlist button */}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleWishlist(product.id);
+                          }}
+                          className="absolute top-3 right-3 p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-background transition-colors"
+                        >
+                          <Heart
+                            className={`w-5 h-5 transition-colors ${
+                              isInWishlist(product.id)
+                                ? "fill-primary text-primary"
+                                : "text-muted-foreground hover:text-primary"
+                            }`}
+                          />
+                        </button>
+                      </div>
                     </Link>
 
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-sm">
-                        {product.specifications.carat}
-                      </span>
-                      <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-sm">
-                        {product.specifications.clarity}
-                      </span>
-                    </div>
+                    <div className="p-4 sm:p-6">
+                      <Link to={`/product/${product.id}`}>
+                        <h3 className="font-display text-lg text-foreground mb-2 group-hover:text-primary transition-colors">
+                          {getProductName(product)}
+                        </h3>
+                      </Link>
 
-                    <div className="flex items-center justify-between">
-                      <span className="font-display text-xl text-foreground">
-                        {formatPrice(product.price)}
-                      </span>
-                      <Button
-                        size="sm"
-                        variant="luxuryOutline"
-                        onClick={() => handleAddToCart(product)}
-                        className="text-xs"
-                      >
-                        <ShoppingBag className="w-4 h-4 mr-1" />
-                        {t("addToCart")}
-                      </Button>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {product.carat && (
+                          <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-sm">
+                            {product.carat}
+                          </span>
+                        )}
+                        {product.clarity && (
+                          <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-sm">
+                            {product.clarity}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <span className="font-display text-xl text-foreground">
+                          {formatPrice(Number(product.price))}
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="luxuryOutline"
+                          onClick={() => handleAddToCart(product)}
+                          className="text-xs"
+                        >
+                          <ShoppingBag className="w-4 h-4 mr-1" />
+                          {t("addToCart")}
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
 
           {/* Empty state */}
-          {filteredProducts.length === 0 && (
+          {!isLoading && products.length === 0 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
