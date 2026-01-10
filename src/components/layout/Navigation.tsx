@@ -1,18 +1,27 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Diamond } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Menu, X, ChevronDown } from "lucide-react";
+import { useLanguage, Language } from "@/contexts/LanguageContext";
+import logo from "@/assets/logo.png";
 
-const navLinks = [
-  { name: "Collections", href: "#collections" },
-  { name: "About", href: "#about" },
-  { name: "Bespoke", href: "#bespoke" },
-  { name: "Contact", href: "#contact" },
+const languages: { code: Language; label: string }[] = [
+  { code: "en", label: "EN" },
+  { code: "lv", label: "LV" },
+  { code: "ru", label: "RU" },
 ];
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const { language, setLanguage, t } = useLanguage();
+
+  const navLinks = [
+    { name: t("collections"), href: "#collections" },
+    { name: t("about"), href: "#about" },
+    { name: t("bespoke"), href: "#bespoke" },
+    { name: t("contact"), href: "#contact" },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,6 +30,15 @@ export const Navigation = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close language menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setLangMenuOpen(false);
+    if (langMenuOpen) {
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
+    }
+  }, [langMenuOpen]);
 
   return (
     <motion.header
@@ -33,23 +51,27 @@ export const Navigation = () => {
           : "bg-transparent"
       }`}
     >
-      <nav className="container mx-auto px-6 lg:px-12">
-        <div className="flex items-center justify-between h-20 lg:h-24">
+      <nav className="container mx-auto px-4 sm:px-6 lg:px-12">
+        <div className="flex items-center justify-between h-16 sm:h-20 lg:h-24">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-3 group">
-            <Diamond className="w-8 h-8 text-primary transition-transform duration-500 group-hover:rotate-12" />
+          <a href="#" className="flex items-center gap-2 sm:gap-3 group">
+            <img 
+              src={logo} 
+              alt="Surat Diamond Logo" 
+              className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 object-contain transition-transform duration-500 group-hover:scale-105"
+            />
             <div className="flex flex-col">
-              <span className="font-display text-xl lg:text-2xl tracking-wider text-foreground">
-                SURAT DIAMOND
+              <span className="font-display text-base sm:text-lg lg:text-xl tracking-wider text-foreground">
+                Surat diamond
               </span>
-              <span className="text-[10px] lg:text-xs tracking-[0.3em] text-muted-foreground uppercase">
-                Latvia
+              <span className="text-[8px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.3em] text-muted-foreground uppercase">
+                Premium Jewellery
               </span>
             </div>
           </a>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-10">
+          <div className="hidden lg:flex items-center gap-8 xl:gap-10">
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -61,21 +83,105 @@ export const Navigation = () => {
             ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden lg:block">
-            <Button variant="luxuryOutline" size="lg">
-              Book Consultation
-            </Button>
+          {/* Language Switcher - Desktop */}
+          <div className="hidden lg:block relative">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setLangMenuOpen(!langMenuOpen);
+              }}
+              className="flex items-center gap-1 px-3 py-2 text-sm tracking-wider uppercase text-muted-foreground hover:text-primary transition-colors duration-300 font-body border border-border/50 hover:border-primary/50"
+            >
+              {language.toUpperCase()}
+              <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${langMenuOpen ? "rotate-180" : ""}`} />
+            </button>
+            
+            <AnimatePresence>
+              {langMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute top-full right-0 mt-2 bg-card border border-border/50 shadow-lg"
+                >
+                  {languages.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLanguage(lang.code);
+                        setLangMenuOpen(false);
+                      }}
+                      className={`block w-full px-6 py-3 text-sm tracking-wider uppercase font-body text-left transition-colors duration-300 ${
+                        language === lang.code
+                          ? "text-primary bg-primary/5"
+                          : "text-muted-foreground hover:text-primary hover:bg-primary/5"
+                      }`}
+                    >
+                      {lang.label}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 text-foreground"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile: Language + Menu Toggle */}
+          <div className="flex lg:hidden items-center gap-2">
+            {/* Mobile Language Switcher */}
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLangMenuOpen(!langMenuOpen);
+                }}
+                className="flex items-center gap-1 px-2 py-1.5 text-xs tracking-wider uppercase text-muted-foreground font-body border border-border/50"
+              >
+                {language.toUpperCase()}
+                <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${langMenuOpen ? "rotate-180" : ""}`} />
+              </button>
+              
+              <AnimatePresence>
+                {langMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full right-0 mt-2 bg-card border border-border/50 shadow-lg z-50"
+                  >
+                    {languages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setLanguage(lang.code);
+                          setLangMenuOpen(false);
+                        }}
+                        className={`block w-full px-4 py-2 text-xs tracking-wider uppercase font-body text-left transition-colors duration-300 ${
+                          language === lang.code
+                            ? "text-primary bg-primary/5"
+                            : "text-muted-foreground hover:text-primary"
+                        }`}
+                      >
+                        {lang.label}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Menu Toggle */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-2 text-foreground"
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -89,7 +195,7 @@ export const Navigation = () => {
             transition={{ duration: 0.3 }}
             className="lg:hidden bg-background/98 backdrop-blur-md border-t border-border/50"
           >
-            <div className="container mx-auto px-6 py-8 flex flex-col gap-6">
+            <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-4 sm:gap-6">
               {navLinks.map((link, index) => (
                 <motion.a
                   key={link.name}
@@ -98,14 +204,11 @@ export const Navigation = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
                   onClick={() => setIsOpen(false)}
-                  className="text-lg tracking-[0.15em] uppercase text-foreground hover:text-primary transition-colors font-body"
+                  className="text-base sm:text-lg tracking-[0.15em] uppercase text-foreground hover:text-primary transition-colors font-body"
                 >
                   {link.name}
                 </motion.a>
               ))}
-              <Button variant="luxury" size="lg" className="mt-4">
-                Book Consultation
-              </Button>
             </div>
           </motion.div>
         )}

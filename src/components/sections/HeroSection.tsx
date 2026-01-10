@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import collectionBracelet from "@/assets/collection-bracelet.jpg";
 import collectionRing from "@/assets/collection-ring.jpg";
 import collectionEarrings from "@/assets/collection-earrings.jpg";
@@ -13,18 +14,20 @@ const productImages = [
 ];
 
 export const HeroSection = () => {
+  const { t } = useLanguage();
+
   return (
-    <section className="relative min-h-screen bg-background pt-24 pb-16 overflow-hidden">
+    <section className="relative min-h-screen bg-background pt-20 sm:pt-24 pb-12 sm:pb-16 overflow-hidden">
       {/* Large Typography */}
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="font-display text-[clamp(3rem,12vw,10rem)] text-foreground text-center leading-none tracking-tight mb-8"
+          className="font-display text-[clamp(2rem,10vw,10rem)] text-foreground text-center leading-none tracking-tight mb-6 sm:mb-8"
         >
           <span className="text-muted-foreground/60">(</span>
-          <span className="tracking-[0.1em]">DIAMONDS</span>
+          <span className="tracking-[0.05em] sm:tracking-[0.1em]">{t("diamonds")}</span>
           <span className="text-muted-foreground/60">)</span>
         </motion.h1>
 
@@ -33,7 +36,7 @@ export const HeroSection = () => {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 -mt-8 md:-mt-16"
+          className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 md:gap-6 -mt-4 sm:-mt-8 md:-mt-16"
         >
           {productImages.map((image, index) => (
             <motion.div
@@ -58,21 +61,21 @@ export const HeroSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="text-center mt-16 md:mt-24 max-w-xl mx-auto"
+          className="text-center mt-10 sm:mt-16 md:mt-24 max-w-xl mx-auto px-2"
         >
-          <h2 className="font-display text-2xl md:text-3xl italic text-foreground mb-4">
-            Discover our latest jewelry
+          <h2 className="font-display text-xl sm:text-2xl md:text-3xl italic text-foreground mb-3 sm:mb-4">
+            {t("discoverLatestJewelry")}
           </h2>
-          <p className="font-body text-muted-foreground text-sm md:text-base leading-relaxed mb-8">
-            creations crafted with love and attention to detail. Our features exquisite pieces adorned with sparkling diamonds, adding luxury and elegance to your ensemble.
+          <p className="font-body text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed mb-6 sm:mb-8">
+            {t("heroDescription")}
           </p>
           <motion.a
             href="#collections"
-            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-body text-sm tracking-wide group"
+            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-body text-xs sm:text-sm tracking-wide group"
             whileHover={{ x: 5 }}
           >
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-            <span>Go To Catalog</span>
+            <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 transition-transform group-hover:translate-x-1" />
+            <span>{t("goToCatalog")}</span>
           </motion.a>
         </motion.div>
       </div>
