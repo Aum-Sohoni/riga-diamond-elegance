@@ -86,13 +86,10 @@ const Checkout = () => {
     setIsLoading(true);
     
     try {
+      // Only send product IDs and quantities - prices are validated server-side
       const checkoutItems = items.map((item) => ({
-        name: item.product.name,
-        nameLv: item.product.nameLv || item.product.name_lv,
-        nameRu: item.product.nameRu || item.product.name_ru,
-        price: item.product.price,
+        productId: item.product.id,
         quantity: item.quantity,
-        image: categoryImages[item.product.category],
       }));
 
       const { data, error } = await supabase.functions.invoke("create-checkout", {
