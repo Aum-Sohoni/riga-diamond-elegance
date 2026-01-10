@@ -195,6 +195,29 @@ export const translations: Translations = {
   authError: { en: "Authentication error. Please try again.", lv: "Autentifikācijas kļūda. Lūdzu, mēģiniet vēlreiz.", ru: "Ошибка аутентификации. Попробуйте снова." },
   loginToCheckout: { en: "Please sign in to checkout", lv: "Lūdzu, piesakieties, lai apmaksātu", ru: "Пожалуйста, войдите для оформления заказа" },
   account: { en: "Account", lv: "Konts", ru: "Аккаунт" },
+  
+  // Profile
+  profile: { en: "Profile", lv: "Profils", ru: "Профиль" },
+  orders: { en: "Orders", lv: "Pasūtījumi", ru: "Заказы" },
+  wishlist: { en: "Wishlist", lv: "Vēlmju saraksts", ru: "Список желаний" },
+  personalInfo: { en: "Personal Information", lv: "Personīgā informācija", ru: "Личная информация" },
+  phone: { en: "Phone", lv: "Telefons", ru: "Телефон" },
+  shippingAddress: { en: "Shipping Address", lv: "Piegādes adrese", ru: "Адрес доставки" },
+  address: { en: "Address", lv: "Adrese", ru: "Адрес" },
+  city: { en: "City", lv: "Pilsēta", ru: "Город" },
+  postalCode: { en: "Postal Code", lv: "Pasta indekss", ru: "Почтовый индекс" },
+  country: { en: "Country", lv: "Valsts", ru: "Страна" },
+  saveChanges: { en: "Save Changes", lv: "Saglabāt izmaiņas", ru: "Сохранить изменения" },
+  orderHistory: { en: "Order History", lv: "Pasūtījumu vēsture", ru: "История заказов" },
+  noOrdersYet: { en: "You haven't placed any orders yet.", lv: "Jūs vēl neesat veicis nevienu pasūtījumu.", ru: "Вы еще не сделали ни одного заказа." },
+  startShopping: { en: "Start Shopping", lv: "Sākt iepirkties", ru: "Начать покупки" },
+  order: { en: "Order", lv: "Pasūtījums", ru: "Заказ" },
+  myWishlist: { en: "My Wishlist", lv: "Mans vēlmju saraksts", ru: "Мой список желаний" },
+  wishlistEmpty: { en: "Your wishlist is empty.", lv: "Jūsu vēlmju saraksts ir tukšs.", ru: "Ваш список желаний пуст." },
+  itemsInWishlist: { en: "items in wishlist", lv: "preces vēlmju sarakstā", ru: "товаров в списке желаний" },
+  viewProducts: { en: "View Products", lv: "Skatīt produktus", ru: "Смотреть товары" },
+  addToWishlist: { en: "Add to Wishlist", lv: "Pievienot vēlmju sarakstam", ru: "В список желаний" },
+  removeFromWishlist: { en: "Remove from Wishlist", lv: "Noņemt no vēlmju saraksta", ru: "Удалить из списка желаний" },
 };
 
 interface LanguageContextType {

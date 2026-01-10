@@ -194,6 +194,14 @@ export const Navigation = () => {
                       transition={{ duration: 0.2 }}
                       className="absolute top-full right-0 mt-2 bg-card border border-border/50 shadow-lg min-w-40"
                     >
+                      <Link
+                        to="/profile"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 w-full px-4 py-3 text-sm text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors duration-300"
+                      >
+                        <User className="w-4 h-4" />
+                        {t("profile")}
+                      </Link>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
