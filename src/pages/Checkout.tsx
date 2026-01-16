@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -14,14 +13,10 @@ import {
   ShoppingBag,
   MessageCircle,
 } from "lucide-react";
-import { toast } from "sonner";
 import collectionNecklace from "@/assets/collection-necklace.jpg";
 import collectionRing from "@/assets/collection-ring.jpg";
 import collectionEarrings from "@/assets/collection-earrings.jpg";
 import collectionBracelet from "@/assets/collection-bracelet.jpg";
-
-// WhatsApp Click-to-Chat base URL
-const WHATSAPP_BASE_URL = "https://wa.me/+37125578862";
 
 const categoryImages: Record<string, string> = {
   necklaces: collectionNecklace,
@@ -33,7 +28,6 @@ const categoryImages: Record<string, string> = {
 const Checkout = () => {
   const { t, language } = useLanguage();
   const { items, removeFromCart, updateQuantity, totalPrice } = useCart();
-  const [isLoading, setIsLoading] = useState(false);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-EU", {
@@ -53,53 +47,21 @@ const Checkout = () => {
     }
   };
 
-  const handleWhatsAppCheckout = () => {
-    setIsLoading(true);
+  const handleCheckout = () => {
+    const orderItems = items
+      .map((item) => {
+        const name = getProductName(item.product);
+        const qty = item.quantity;
+        const lineTotal = formatPrice(item.product.price * qty);
+        return `• ${name} x ${qty} - ${lineTotal}`;
+      })
+      .join("\n");
 
-    try {
-      const orderItems = items
-        .map((item) => {
-          const name = getProductName(item.product);
-          const qty = item.quantity;
-          const lineTotal = formatPrice(item.product.price * qty);
-          return `• ${name} x ${qty} - ${lineTotal}`;
-        })
-        .join("\n");
+    const message = `🛒 Order from Surat Diamond\n\n${orderItems}\n\nTotal: ${formatPrice(totalPrice)}`;
 
-      let heading = "";
-      let itemsLabel = "";
-      let totalLabel = "";
+    const whatsappUrl = `https://wa.me/37125578862?text=${encodeURIComponent(message)}`;
 
-      switch (language) {
-        case "lv":
-          heading = "🛒 *Jauns pasūtījums (Surat Diamond)*";
-          itemsLabel = "📦 *Preces:*";
-          totalLabel = "💰 *Kopā:*";
-          break;
-        case "ru":
-          heading = "🛒 *Новый заказ (Surat Diamond)*";
-          itemsLabel = "📦 *Товары:*";
-          totalLabel = "💰 *Итого:*";
-          break;
-        default:
-          heading = "🛒 *New Order (Surat Diamond)*";
-          itemsLabel = "📦 *Items:*";
-          totalLabel = "💰 *Total:*";
-      }
-
-      const message = `${heading}\n\n${itemsLabel}\n${orderItems}\n\n${totalLabel} ${formatPrice(totalPrice)}`;
-
-      // encodeURIComponent formats spaces as %20 and new lines as %0A
-      const encodedMessage = encodeURIComponent(message);
-      const url = `${WHATSAPP_BASE_URL}?text=${encodedMessage}`;
-
-      window.open(url, "_blank");
-    } catch (error) {
-      console.error("WhatsApp checkout error:", error);
-      toast.error(t("checkoutError"));
-    } finally {
-      setIsLoading(false);
-    }
+    window.location.assign(whatsappUrl);
   };
 
   // Empty Cart View
@@ -237,8 +199,7 @@ const Checkout = () => {
                   variant="luxury"
                   size="lg"
                   className="w-full mb-4"
-                  onClick={handleWhatsAppCheckout}
-                  disabled={isLoading}
+                  onClick={handleCheckout}
                 >
                   <MessageCircle className="w-4 h-4 mr-2" />
                   {language === "lv"
